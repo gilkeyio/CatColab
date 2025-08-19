@@ -1,6 +1,6 @@
 import ChevronLeft from "lucide-solid/icons/chevron-left";
 import ChevronRight from "lucide-solid/icons/chevron-right";
-import { Show, createMemo } from "solid-js";
+import { Show, createResource } from "solid-js";
 
 import type { DblModel, MotifsOptions } from "catlog-wasm";
 import type { ModelAnalysisProps } from "../../analysis";
@@ -11,7 +11,7 @@ import { ModelGraphviz } from "./model_graph";
 
 import "./submodel_graphs.css";
 
-type FindSubmodelsFn = (model: DblModel, options: MotifsOptions) => DblModel[];
+type FindSubmodelsFn = (model: DblModel, options: MotifsOptions) => Promise<DblModel[]>;
 
 /** Configuration and state of a submodels analysis. */
 export type SubmodelsAnalysisContent = {
@@ -52,18 +52,19 @@ function SubmodelsAnalysis(
         title?: string;
     } & ModelAnalysisProps<SubmodelsAnalysisContent>,
 ) {
-    const submodels = createMemo<DblModel[]>(
+    const [submodels] = createResource(
         () => {
             const validated = props.liveModel.validatedModel();
             if (validated?.tag !== "Valid") {
-                return [];
+                return undefined;
             }
-            return props.findSubmodels(validated.model, {
-                maxPathLength: props.content.maxPathLength ?? null,
-            });
+            return {
+                model: validated.model,
+                options: { maxPathLength: props.content.maxPathLength ?? null },
+            } as const;
         },
-        [],
-        { equals: false },
+        (src) => (src ? props.findSubmodels(src.model, src.options) : Promise.resolve([])),
+        { initialValue: [] as DblModel[] },
     );
 
     const index = () => props.content.activeIndex;
@@ -72,10 +73,12 @@ function SubmodelsAnalysis(
             content.activeIndex = index;
         });
     const decIndex = () => setIndex(Math.max(0, index() - 1));
-    const incIndex = () => setIndex(Math.min(index() + 1, submodels().length - 1));
+    const incIndex = () =>
+        setIndex(Math.min(index() + 1, (submodels()?.length ?? 0) - 1));
 
     const filteredModel = () => {
-        const submodel = submodels()[index()];
+        const list = submodels() ?? [];
+        const submodel = list[index()];
         if (!submodel) {
             return [];
         }
@@ -95,14 +98,17 @@ function SubmodelsAnalysis(
             <IconButton onClick={decIndex} disabled={index() <= 0}>
                 <ChevronLeft />
             </IconButton>
-            <Show when={submodels().length}>
+            <Show when={(submodels()?.length ?? 0)}>
                 {(length) => (
                     <span>
                         {index() + 1} / {length()}
                     </span>
                 )}
             </Show>
-            <IconButton onClick={incIndex} disabled={index() >= submodels().length - 1}>
+            <IconButton
+                onClick={incIndex}
+                disabled={index() >= (submodels()?.length ?? 0) - 1}
+            >
                 <ChevronRight />
             </IconButton>
         </div>

@@ -54,7 +54,7 @@ export default function createRegulatoryNetworkTheory(theoryMeta: TheoryMeta): T
                 description: "Analyze the network for positive feedback loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thSignedCategory.positiveLoops(model, options);
+                    return Promise.resolve(thSignedCategory.positiveLoops(model, options));
                 },
             }),
             analyses.configureSubmodelsAnalysis({
@@ -63,7 +63,7 @@ export default function createRegulatoryNetworkTheory(theoryMeta: TheoryMeta): T
                 description: "Analyze the network for negative feedback loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thSignedCategory.negativeLoops(model, options);
+                    return Promise.resolve(thSignedCategory.negativeLoops(model, options));
                 },
             }),
             analyses.configureLinearODE({

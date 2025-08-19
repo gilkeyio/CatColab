@@ -76,7 +76,7 @@ export default function createCausalLoopDelaysTheory(theoryMeta: TheoryMeta): Th
                 description: "Find the fast-acting balancing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thDelayedSignedCategory.negativeLoops(model, options);
+                    return Promise.resolve(thDelayedSignedCategory.negativeLoops(model, options));
                 },
             }),
             analyses.configureSubmodelsAnalysis({
@@ -85,7 +85,7 @@ export default function createCausalLoopDelaysTheory(theoryMeta: TheoryMeta): Th
                 description: "Find the fast-acting reinforcing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thDelayedSignedCategory.positiveLoops(model, options);
+                    return Promise.resolve(thDelayedSignedCategory.positiveLoops(model, options));
                 },
             }),
             analyses.configureSubmodelsAnalysis({
@@ -94,7 +94,9 @@ export default function createCausalLoopDelaysTheory(theoryMeta: TheoryMeta): Th
                 description: "Find the slow-acting balancing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thDelayedSignedCategory.delayedNegativeLoops(model, options);
+                    return Promise.resolve(
+                        thDelayedSignedCategory.delayedNegativeLoops(model, options),
+                    );
                 },
             }),
             analyses.configureSubmodelsAnalysis({
@@ -103,7 +105,9 @@ export default function createCausalLoopDelaysTheory(theoryMeta: TheoryMeta): Th
                 description: "Find the slow-acting reinforcing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thDelayedSignedCategory.delayedPositiveLoops(model, options);
+                    return Promise.resolve(
+                        thDelayedSignedCategory.delayedPositiveLoops(model, options),
+                    );
                 },
             }),
         ],

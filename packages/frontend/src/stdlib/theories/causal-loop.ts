@@ -55,7 +55,7 @@ export default function createCausalLoopTheory(theoryMeta: TheoryMeta): Theory {
                 description: "Analyze the diagram for balancing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thSignedCategory.negativeLoops(model, options);
+                    return Promise.resolve(thSignedCategory.negativeLoops(model, options));
                 },
             }),
             analyses.configureSubmodelsAnalysis({
@@ -64,7 +64,9 @@ export default function createCausalLoopTheory(theoryMeta: TheoryMeta): Theory {
                 description: "Analyze the diagram for reinforcing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    return thSignedCategory.positiveLoops(model, options);
+                    console.log("here");
+
+                    return Promise.resolve(thSignedCategory.positiveLoops(model, options));
                 },
             }),
             analyses.configureLinearODE({
