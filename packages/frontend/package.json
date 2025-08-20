@@ -44,6 +44,7 @@
         "@viz-js/viz": "^3.15.0",
         "catcolab-api": "link:../backend/pkg",
         "catlog-wasm": "link:../catlog-wasm/pkg",
+        "comlink": "^4.4.1",
         "echarts": "^5.5.1",
         "echarts-solid": "^0.2.0",
         "fast-equals": "^5.2.2",
