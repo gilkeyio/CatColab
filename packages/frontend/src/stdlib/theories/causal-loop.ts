@@ -3,6 +3,7 @@ import { ThSignedCategory } from "catlog-wasm";
 import { Theory } from "../../theory";
 import * as analyses from "../analyses";
 import type { TheoryMeta } from "../types";
+import { serializeFromDblModel } from "./blah-helper";
 
 export default function createCausalLoopTheory(theoryMeta: TheoryMeta): Theory {
     const thSignedCategory = new ThSignedCategory();
@@ -55,6 +56,8 @@ export default function createCausalLoopTheory(theoryMeta: TheoryMeta): Theory {
                 description: "Analyze the diagram for balancing loops",
                 help: "loops",
                 findSubmodels(model, options) {
+
+
                     return Promise.resolve(thSignedCategory.negativeLoops(model, options));
                 },
             }),
@@ -64,7 +67,8 @@ export default function createCausalLoopTheory(theoryMeta: TheoryMeta): Theory {
                 description: "Analyze the diagram for reinforcing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    console.log("here");
+                    console.log("here2");
+                    const serial = serializeFromDblModel(model, "signed-category");
 
                     return Promise.resolve(thSignedCategory.positiveLoops(model, options));
                 },
