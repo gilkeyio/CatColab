@@ -3,7 +3,8 @@ import { ThSignedCategory } from "catlog-wasm";
 import { Theory } from "../../theory";
 import * as analyses from "../analyses";
 import type { TheoryMeta } from "../types";
-import { serializeFromDblModel } from "./blah-helper";
+import { deserializeDblModelWithTheory, serializeDblModel } from "./model-io";
+import { positiveLoopsWorker } from "./loops.worker-client";
 
 export default function createCausalLoopTheory(theoryMeta: TheoryMeta): Theory {
     const thSignedCategory = new ThSignedCategory();
@@ -67,11 +68,12 @@ export default function createCausalLoopTheory(theoryMeta: TheoryMeta): Theory {
                 description: "Analyze the diagram for reinforcing loops",
                 help: "loops",
                 findSubmodels(model, options) {
-                    console.log("here2");
-                    const serial = serializeFromDblModel(model, "signed-category");
+                    const serial = serializeDblModel(model);
 
-                    return Promise.resolve(thSignedCategory.positiveLoops(model, options));
-                },
+                    return positiveLoopsWorker(serial, options);
+
+
+                }
             }),
             analyses.configureLinearODE({
                 simulate: (model, data) => thSignedCategory.linearODE(model, data),
